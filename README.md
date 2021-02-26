@@ -51,8 +51,23 @@ The API will return the following three types of:
 
 ### Endpoints
 
-`#### GET \movies`
-- Required permissions: Casting Assistant `get:movies` and `get:actors`
+#### Roles & Permissions
+- Casting Assistant
+    - `get:movies`
+    - `get:actors`  
+- Casting Director
+    - All permissions a Casting Assistant has +
+    - `post:actors`
+    - `delete:actors`
+    - `patch:movies`
+    - `patch:actors`
+- Executive Producer
+    - All permissions a Casting Director has +
+    -  `post:movies`
+    -  `delete:movies`
+
+#### `GET \movies`
+- Required permissions: Casting Assistant
 - Fetches a dictionary of all available movies
 
 Example response:
@@ -74,8 +89,8 @@ Example response:
 }
 ```
 
-`#### GET \actors`
-- Required permissions: Casting Assistant `get:movies` and `get:actors`
+#### `GET \actors`
+- Required permissions: Casting Assistant
 - Fetches a dictionary of all available actors
 
 Example response:
@@ -105,93 +120,135 @@ Example response:
 }
 ```
 
-#### POST /questions
+#### `POST /movies`
+- Required permissions: Executive Producer
+- Creates a new movie 
 
-- Creates a new question 
-- Request example: `curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question": "Which planet is the hottest in the solar system", "answer": "Venus", "difficulty": 3, "category": "3"}`
+Example body:
+```
+{
+  "title": "Thor",
+  "release_date": "2012"
+}
+```
 
 Example response: 
 ```
 {
-    "questions": [
+    "movie": [
         {
-            "answer": "Apollo 13", 
-            "category": 5, 
-            "difficulty": 4, 
-            "id": 2, 
-            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
-        }, 
-        {
-            "answer": "Tom Cruise", 
-            "category": 5, 
-            "difficulty": 4, 
-            "id": 4, 
-            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
-        }, 
-        {
-            "answer": "Venus", 
-            "category": 3, 
-            "difficulty": 3, 
-            "id": 9, 
-            "question": "Which planet is the hottest in the solar system"
-        }, 
-        
-    ], 
-    "success": true, 
-    "total_questions": 20
-}
-```
-
-#### POST /questions with search term
-
-- Returns search results
-- Request example: `curl http://127.0.0.1:5000/questions/search -X POST -H "Content-Type: application/json" -d '{"search_term": "peanut"}'` </br>
-
-Example response:
-```
-{
-  "questions": [
-    {
-      "answer": "George Washington Carver", 
-      "category": 4, 
-      "difficulty": 2, 
-      "id": 12, 
-      "question": "Who invented Peanut Butter?"
-    }
-  ], 
-  "success": true, 
-  "total_questions": 45
-}
-```
-
-#### POST /quizzes
-
-- Allows users to play the quiz game.
-- Uses JSON request parameters of category and previous questions.
-- Request example:  `curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions": [20, 21], "quiz_category": {"type": "Science", "id": "1"}}'`<br>
-Example response:
-```
-{
-    "question": {
-        "answer": "Blood", 
-        "category": 1, 
-        "difficulty": 4, 
-        "id": 22, 
-        "question": "Hematology is a branch of medicine involving the study of what?"
-    }, 
+            "id": 6,
+            "release_date": 2012,
+            "title": "Thor"
+        }
+    ],
     "success": true
 }
 ```
 
-#### DELETE /questions/<question_id> 
+#### `POST /actors`
+- Required permissions: Executive Producer
+- Creates a new movie 
 
-- Delete an existing questions from the repository of available questions
-- Request example: `curl http://127.0.0.1:5000/questions/8 -X DELETE`
+Example body:
+```
+{
+    "name": "Ryan Gosling",
+    "age": "40",
+    "gender": "Male"
+}
+```
 
 Example response:
 ```
 {
-  "deleted": "28", 
-  "success": true
+    "actor": [
+        {
+            "age": 40,
+            "gender": "Male",
+            "id": 4,
+            "name": "Ryan Gosling"
+        }
+    ],
+    "success": true
+}
+```
+
+#### `PATCH /movies/<id>
+
+- Required permissions: Casting Director or Executive Producer
+- Updates a movie 
+
+Example body:
+```
+{
+  "title": "Thor",
+  "release_date": "2012"
+}
+```
+
+Example response: 
+```
+{
+    "movie": [
+        {
+            "id": 6,
+            "release_date": 2012,
+            "title": "Thor"
+        }
+    ],
+    "success": true
+}
+``` 
+
+#### `PATCH /actors/<id>
+- Required permissions: Casting Director or Executive Producer
+- Updates an actor 
+
+Example body:
+```
+{
+    "name": "Ryan Gosling",
+    "age": "40",
+    "gender": "Male"
+}
+```
+
+Example response:
+```
+{
+    "actor": [
+        {
+            "age": 40,
+            "gender": "Male",
+            "id": 4,
+            "name": "Ryan Gosling"
+        }
+    ],
+    "success": true
+}
+``` 
+
+#### `DELETE /movies/<id>`
+- Required permissions: Executive Producer
+- Delete an existing movie from the repository of available movies
+
+Example response:
+```
+{
+  "success": true,
+  "delete": 2
+}
+```
+
+#### `DELETE /actors/<id>`
+- Required permissions: Executive Producer
+- Delete an existing actor from the repository of available actors
+
+Example response:
+```
+{
+  "success": true,
+  "delete": 1 
 }
 ```
