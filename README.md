@@ -67,7 +67,7 @@ The API will return the following three types of:
     -  `delete:movies`
 
 #### `GET \movies`
-- Required permissions: Casting Assistant
+- Required permissions: Casting Assistant, Casting Director, or Executive Producer
 - Fetches a dictionary of all available movies
 
 Example response:
@@ -90,7 +90,7 @@ Example response:
 ```
 
 #### `GET \actors`
-- Required permissions: Casting Assistant
+- Required permissions: Casting Assistant, Casting Director, or Executive Producer
 - Fetches a dictionary of all available actors
 
 Example response:
@@ -147,7 +147,7 @@ Example response:
 ```
 
 #### `POST /actors`
-- Required permissions: Executive Producer
+- Required permissions: Casting Director or Executive Producer
 - Creates a new movie 
 
 Example body:
@@ -174,7 +174,7 @@ Example response:
 }
 ```
 
-#### `PATCH /movies/<id>
+#### `PATCH /movies/<id>`
 
 - Required permissions: Casting Director or Executive Producer
 - Updates a movie 
@@ -242,7 +242,7 @@ Example response:
 ```
 
 #### `DELETE /actors/<id>`
-- Required permissions: Executive Producer
+- Required permissions: Casting Director or Executive Producer
 - Delete an existing actor from the repository of available actors
 
 Example response:
