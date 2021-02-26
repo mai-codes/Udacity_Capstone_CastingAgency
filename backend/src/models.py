@@ -27,11 +27,12 @@ def db_drop_and_create_all():
 
 '''
 Movies
-a persistent drink entity, extends the base SQLAlchemy Model
+a persistent movie entity, extends the base SQLAlchemy Model
 '''
 class Movies(db.Model):    
     __tablename__ = "movies"
 
+    # movie db columns
     id = Column(Integer().with_variant(Integer, "sqlite"), primary_key=True)
     title = Column(String(180), unique=True, nullable=False)
     release_date = Column(String(180), nullable=False)
@@ -43,6 +44,7 @@ class Movies(db.Model):
     def __repr__(self):
         return f"( Movie {self.id} {self.title} {self.release_date} )"
 
+    # a method to format movie db
     def style(self):
         return {
             'id': self.id,
@@ -50,21 +52,29 @@ class Movies(db.Model):
             'release_date': self.release_date
         }
 
+    # insert (post) instance into db
     def insert(self):
         db.session.add(self)
         db.session.commit()
 
+    # delete instance in db
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
+    # update (patch) instance in db
     def update(self):
         db.session.commit()
 
+'''
+Actors
+a persistent actor entity, extends the base SQLAlchemy Model
+'''
 
 class Actors(db.Model):
     __tablename__ = "actors"
 
+    # actors db columns
     id = Column(Integer().with_variant(Integer, "sqlite"), primary_key=True, nullable=False)
     name = Column(String(180), unique=True, nullable=False)
     age =  Column(Integer().with_variant(Integer, "sqlite"), nullable=False)
@@ -78,6 +88,7 @@ class Actors(db.Model):
     def __repr__(self):
         return f"( Actor {self.id} {self.name} {self.age} {self.gender} )"
 
+    # a method to format actors db
     def style(self):
         return {
             'id': self.id,
@@ -86,13 +97,16 @@ class Actors(db.Model):
             'gender': self.gender
         }
 
+    # insert (post) actor into db 
     def insert(self):
         db.session.add(self)
         db.session.commit()
 
+    # delete instance from db
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
+    # update (patch) actor in db
     def update(self):
         db.session.commit()

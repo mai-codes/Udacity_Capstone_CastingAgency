@@ -5,7 +5,6 @@ import json
 from flask_cors import CORS
 
 from .models import db_drop_and_create_all, setup_db, Movies, Actors
-# from db import setup_db
 from .auth import AuthError, requires_auth
 
 
@@ -31,7 +30,7 @@ def after_request(response):
 # db_drop_and_create_all()
 
 ## ROUTES
-# Simple health check
+# Check the index route is running smoothly
 @app.route('/')
 def index():
     return "Healthy"
@@ -39,7 +38,7 @@ def index():
 '''
     GET /movies
     - Retrieves movies stored in db
-    - Request arguments: None
+    - Request arguments: n/a
     - Returns: A list of movies ordered by id and containing the title, and release year
 '''
 
@@ -61,9 +60,9 @@ def get_movies(payload):
 
 '''
     GET /actors
-    - Retrieves movies stored in db
-    - Request arguments: None
-    - Returns: A list of movies ordered by id and containing the title, and release year
+    - Retrieves actors stored in db
+    - Request arguments: n/a
+    - Returns: A list of actors ordered by id and containing the name, age, and gender
 '''
 
 @app.route('/actors')
@@ -82,80 +81,194 @@ def get_actors(payload):
     except:
         abort(422)
 
+'''
+    POST /movies
+    - Adds new movie instance in db
+    - Request arguments: n/a
+    - Returns: The newly added movie containing id, the title, and release year
+'''
 
-
-@app.route('/movies',  methods=['POST'])
+@app.route('/movies', methods=['POST'])
 @requires_auth('post:movies')
-def post_movies(jwt):
+def post_movies(payload):
     #load data 
     data = request.get_json()
 
-    if not ('title' in data and 'recipe' in data):
+    if not ('title' in data and 'release_date' in data):
         abort(422)
 
     title = data.get('title')
-    recipe = data.get('recipe')
+    release_date = data.get('release_date')
 
     try:
-        newdrink = Drink(title=title, recipe=json.dumps(recipe))
-        newdrink.insert()
+        movie = Movies(title=title, release_date=release_date)
+        movie.insert()
 
         return jsonify({
             'success': True,
-            'drinks': [newdrink.long()],
+            'movie': [movie.style()],
+        }), 200
+
+    except:
+        abort(422)
+
+'''
+    POST /actors
+    - Adds new actor instance in db
+    - Request arguments: n/a
+    - Returns: The newly added actor containing id, the name, age, and gender
+'''
+
+@app.route('/actors',  methods=['POST'])
+@requires_auth('post:actors')
+def post_actors(payload):
+    #load data 
+    data = request.get_json()
+
+    if not ('name' in data and 'age' in data and 'gender' in data):
+        abort(422)
+
+    name = data.get('name')
+    age = data.get('age')
+    gender = data.get('gender')
+
+    try:
+        actor = Actors(name=name, age=age, gender=gender)
+        actor.insert()
+
+        return jsonify({
+            'success': True,
+            'actor': [actor.style()],
         })
 
     except:
         abort(422)
 
+'''
+    PATCH /movies/<int:id>
+    - Updates a movie instance in db
+    - Request arguments: id
+    - Returns: The newly added movie containing id, the title, and release year
+'''
 
-# @app.route('/drinks/<id>', methods=['PATCH'])
-# @requires_auth('patch:drinks')
-# def update_drinks(jwt, id):
-#     drink = Drink.query.get(id)
+@app.route('/movies/<id>', methods=['PATCH'])
+@requires_auth('patch:movies')
+def update_movies(payload, id):
+    movie = Movies.query.get(id)
 
-#     if not drink:
-#         abort(404)
-#     else:
-#         try:
+    if not movie:
+        abort(404)
+    else:
+        try:
 
-#             data = request.get_json()
+            data = request.get_json()
 
-#             title = data.get('title')
-#             recipe = data.get('recipe')
+            title = data.get('title')
+            release_date = data.get('release_date')
 
-#             if title:
-#                 drink.title = title
-#             if recipe:
-#                 drink.title = recipe
+            if title:
+                movie.title = title
+            if release_date:
+                movie.release_date = release_date
 
-#             drink.update()
+            movie.update()
 
-#             return jsonify({
-#                 'success': True,
-#                 'drinks': [drink.long()]
-#             })
-#         except:
-#             abort(422)
+            return jsonify({
+                'success': True,
+                'movies': [movie.style()]
+            })
+        except:
+            abort(422)
+
+'''
+    PATCH /actors/<int:id>
+    - Updates an actor instance in db
+    - Request arguments: id
+    - Returns: The newly added actor containing id, the title, and release year
+'''
+
+@app.route('/actors/<id>', methods=['PATCH'])
+@requires_auth('patch:actors')
+def update_actors(payload, id):
+    actor = Actors.query.get(id)
+
+    if not actor:
+        abort(404)
+    else:
+        try:
+
+            data = request.get_json()
+
+            name = data.get('name')
+            age = data.get('age')
+            gender = data.get('gender')
+
+            if name:
+                actor.name = name
+            if age:
+                actor.age = age
+            if gender:
+                actor.gender = gender
+
+            actor.update()
+
+            return jsonify({
+                'success': True,
+                'actors': [actor.style()]
+            })
+        except:
+            abort(422)
 
 
-# @app.route("/drinks/<id>", methods=['DELETE'])
-# @requires_auth('delete:drinks')
-# def delete_drink(jwt, id):
+'''
+    DELETE /movies/<int:id>
+    - Deletes a movie instance in db
+    - Request arguments: id
+    - Returns: the id of deleted movie
+'''
 
-#     drink = Drink.query.get(id)
+@app.route("/movies/<id>", methods=['DELETE'])
+@requires_auth('delete:movies')
+def delete_movies(payload, id):
 
-#     if not drink:
-#         abort(404)
-#     else:
-#         try:
-#             drink.delete()
-#             return jsonify({
-#                 'success': True,
-#                 'delete': id
-#             })
-#         except:
-#             abort(422)
+    movie = Movies.query.get(id)
+
+    if not movie:
+        abort(404)
+    else:
+        try:
+            movie.delete()
+            return jsonify({
+                'success': True,
+                'delete': id
+            })
+        except:
+            abort(422)
+
+'''
+    DELETE /actors/<int:id>
+    - Updates an actor instance in db
+    - Request arguments: id
+    - Returns: the id of deleted actor
+'''
+
+@app.route("/actors/<id>", methods=['DELETE'])
+@requires_auth('delete:actors')
+def delete_actors(payload, id):
+
+    actor = Actors.query.get(id)
+
+    if not actor:
+        abort(404)
+    else:
+        try:
+            actor.delete()
+            return jsonify({
+                'success': True,
+                'delete': id
+            })
+        except:
+            abort(422)
 
 ## Error Handling
 
