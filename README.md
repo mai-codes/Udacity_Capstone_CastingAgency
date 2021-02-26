@@ -253,3 +253,6 @@ Example response:
   "delete": 1 
 }
 ```
+
+## Executing the tests
+To run the tests, execute `python3 testapp.py`.
