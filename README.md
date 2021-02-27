@@ -1,3 +1,5 @@
+![Udacity Certificate](Udacity_Certificate.png)
+
 # Casting Agency
 Link to Website: https://castingagency-udacityfsnd.herokuapp.com
 
